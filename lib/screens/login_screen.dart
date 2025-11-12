@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:learn5/theme.dart';
-import 'package:video_player/video_player.dart';
 import 'home_screen.dart';
 import 'signup_screen.dart';
 import 'forgot_screen.dart';
@@ -13,25 +12,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  late VideoPlayerController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = VideoPlayerController.asset('assets/videos/login_video.mp4')
-      ..initialize().then((_) {
-        setState(() {});
-        _controller.setLooping(true);
-        _controller.play();
-      });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     final emailController = TextEditingController();
@@ -47,51 +27,59 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // App Title
                 Center(child: Text("Learn5", style: AppTheme.titleStyle)),
                 const SizedBox(height: 40),
 
+                // Circular Image
                 Center(
-                  child: _controller.value.isInitialized
-                      ? Container(
-                          width: 152,
-                          height: 152,
-                          padding: const EdgeInsets.all(2),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.transparent,
-                            border: Border.all(
-                              color: const Color.fromARGB(255, 255, 255, 250),
-                              width: 2.0,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.4),
-                                blurRadius: 8,
-                                offset: const Offset(4, 4),
-                              ),
-                            ],
-                          ),
-                          child: ClipOval(
-                            child: SizedBox(
-                              width: 150,
-                              height: 150,
-                              child: VideoPlayer(_controller),
-                            ),
-                          ),
-                        )
-                      : const CircularProgressIndicator(),
+                  child: Container(
+                    width: 155,
+                    height: 155,
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.transparent,
+                      border: Border.all(
+                        color: const Color.fromARGB(255, 255, 255, 250),
+                        width: 4.0,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color.fromARGB(
+                            255,
+                            0,
+                            0,
+                            0,
+                          ).withOpacity(0.4),
+                          blurRadius: 8,
+                          offset: const Offset(4, 4),
+                        ),
+                      ],
+                    ),
+                    child: ClipOval(
+                      child: Image.asset(
+                        'assets/images/login_image.png', // 👈 your image
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
                 ),
 
                 const SizedBox(height: 40),
+
+                // Login Title
                 Text("Login", style: AppTheme.heading),
                 const SizedBox(height: 20),
 
+                // Email Field
                 TextField(
                   controller: emailController,
                   decoration: _inputDecoration("Email"),
                 ),
                 const SizedBox(height: 18),
 
+                // Password Field
                 TextField(
                   controller: passwordController,
                   obscureText: true,
@@ -99,6 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 12),
 
+                // Register / Forgot Password
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -143,6 +132,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 25),
 
+                // Login Button
                 Center(
                   child: ElevatedButton(
                     style: AppTheme.mainButton,
@@ -161,6 +151,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 25),
 
+                // OR Divider
                 Row(
                   children: const [
                     Expanded(
@@ -184,6 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 25),
 
+                // Google Sign-in Button
                 Center(
                   child: GestureDetector(
                     onTap: () {
@@ -235,6 +227,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  // Input decoration method
   InputDecoration _inputDecoration(String label) {
     return InputDecoration(
       labelText: label,

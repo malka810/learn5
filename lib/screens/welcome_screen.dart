@@ -19,9 +19,8 @@ class WelcomeScreen extends StatelessWidget {
           ),
 
           Container(
-            color: const Color.fromARGB(255, 249, 255, 77).withOpacity(0.9),
+            color: const Color.fromARGB(255, 227, 255, 113).withOpacity(0.9),
           ),
-
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -36,15 +35,13 @@ class WelcomeScreen extends StatelessWidget {
             ),
           ),
 
-          // 🔹 Foreground content
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly, // 👈 changed
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                // 🔸 App name (slightly lower)
                 const Padding(
-                  padding: EdgeInsets.only(top: 10), // 👈 pushed slightly down
+                  padding: EdgeInsets.only(top: 10),
                   child: Align(
                     alignment: Alignment.topCenter,
                     child: Text(
@@ -66,7 +63,6 @@ class WelcomeScreen extends StatelessWidget {
                   ),
                 ),
 
-                // 🔸 Subtitle
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
@@ -96,9 +92,8 @@ class WelcomeScreen extends StatelessWidget {
                   ),
                 ),
 
-                // 🔸 Button (moved slightly up)
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 5), // 👈 move up
+                  padding: const EdgeInsets.only(bottom: 5),
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.push(

@@ -1,17 +1,89 @@
 import 'package:flutter/material.dart';
 import 'package:learn5/theme.dart';
 import 'login_screen.dart';
+import 'package:learn5/services/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class SignupScreen extends StatelessWidget {
+class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final nameController = TextEditingController();
-    final emailController = TextEditingController();
-    final passwordController = TextEditingController();
-    final confirmPasswordController = TextEditingController();
+  State<SignupScreen> createState() => _SignupScreenState();
+}
 
+class _SignupScreenState extends State<SignupScreen> {
+  // ----------------------------
+  // CONTROLLERS
+  // ----------------------------
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+
+  // ----------------------------
+  // SERVICE + STATE
+  // ----------------------------
+  final AuthService _authService = AuthService();
+  bool _loading = false;
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  // ----------------------------
+  // REGISTER FUNCTION
+  // ----------------------------
+  Future<void> _registerUser() async {
+    final name = nameController.text.trim();
+    final email = emailController.text.trim();
+    final pass = passwordController.text.trim();
+    final confirmPass = confirmPasswordController.text.trim();
+
+    if (name.isEmpty || email.isEmpty || pass.isEmpty || confirmPass.isEmpty) {
+      return _showError("All fields are required");
+    }
+
+    if (pass != confirmPass) {
+      return _showError("Passwords do not match");
+    }
+
+    setState(() => _loading = true);
+
+    try {
+      await _authService.registerWithEmail(
+        email: email,
+        password: pass,
+        fullName: name,
+      );
+
+      // Go to login screen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+      );
+    } on FirebaseAuthException catch (e) {
+      _showError(e.message ?? "Registration failed");
+    } catch (e) {
+      _showError("Unknown error: $e");
+    } finally {
+      setState(() => _loading = false);
+    }
+  }
+
+  // ----------------------------
+  // ERROR MESSAGE HANDLER
+  // ----------------------------
+  void _showError(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -28,6 +100,7 @@ class SignupScreen extends StatelessWidget {
                 Text("Register", style: AppTheme.heading),
                 const SizedBox(height: 25),
 
+                // ---------------------- FULL NAME ----------------------
                 Text("Full Name", style: AppTheme.labelStyle),
                 const SizedBox(height: 4),
                 TextField(
@@ -36,6 +109,7 @@ class SignupScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 18),
 
+                // ---------------------- EMAIL ----------------------
                 Text("Email", style: AppTheme.labelStyle),
                 const SizedBox(height: 4),
                 TextField(
@@ -44,6 +118,7 @@ class SignupScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 18),
 
+                // ---------------------- PASSWORD ----------------------
                 Text("Password", style: AppTheme.labelStyle),
                 const SizedBox(height: 4),
                 TextField(
@@ -53,6 +128,7 @@ class SignupScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 18),
 
+                // ---------------------- CONFIRM PASSWORD ----------------------
                 Text("Confirm Password", style: AppTheme.labelStyle),
                 const SizedBox(height: 4),
                 TextField(
@@ -63,6 +139,7 @@ class SignupScreen extends StatelessWidget {
 
                 const SizedBox(height: 18),
 
+                // ---------------------- LOGIN LINK ----------------------
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -93,18 +170,14 @@ class SignupScreen extends StatelessWidget {
 
                 const SizedBox(height: 25),
 
+                // ---------------------- REGISTER BUTTON ----------------------
                 Center(
                   child: ElevatedButton(
                     style: AppTheme.mainButton,
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (_) => const LoginScreen()),
-                      );
-                    },
-                    child: const Text(
-                      "Register",
-                      style: TextStyle(color: Colors.white, fontSize: 18),
+                    onPressed: _loading ? null : _registerUser,
+                    child: Text(
+                      _loading ? "Registering..." : "Register",
+                      style: const TextStyle(color: Colors.white, fontSize: 18),
                     ),
                   ),
                 ),
@@ -116,7 +189,9 @@ class SignupScreen extends StatelessWidget {
     );
   }
 
-  // 🔹 Input Decoration
+  // ----------------------
+  // INPUT DECORATION UI
+  // ----------------------
   InputDecoration _inputDecoration() {
     return InputDecoration(
       filled: true,

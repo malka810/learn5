@@ -3,6 +3,8 @@ import 'package:learn5/theme.dart';
 import 'home_screen.dart';
 import 'signup_screen.dart';
 import 'forgot_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:learn5/services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,11 +14,22 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  final AuthService _authService = AuthService();
+  bool _loading = false;
+  String? _errorMessage;
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final emailController = TextEditingController();
-    final passwordController = TextEditingController();
-
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -27,11 +40,8 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // App Title
                 Center(child: Text("Learn5", style: AppTheme.titleStyle)),
                 const SizedBox(height: 40),
-
-                // Circular Image
                 Center(
                   child: Container(
                     width: 155,
@@ -59,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     child: ClipOval(
                       child: Image.asset(
-                        'assets/images/login_image.png', // 👈 your image
+                        'assets/images/login_image.png',
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -68,18 +78,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 40),
 
-                // Login Title
                 Text("Login", style: AppTheme.heading),
                 const SizedBox(height: 20),
 
-                // Email Field
                 TextField(
                   controller: emailController,
                   decoration: _inputDecoration("Email"),
                 ),
                 const SizedBox(height: 18),
 
-                // Password Field
                 TextField(
                   controller: passwordController,
                   obscureText: true,
@@ -87,7 +94,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 12),
 
-                // Register / Forgot Password
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -132,16 +138,46 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 25),
 
-                // Login Button
                 Center(
                   child: ElevatedButton(
                     style: AppTheme.mainButton,
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (_) => const HomeScreen()),
-                      );
-                    },
+                    onPressed: _loading
+                        ? null
+                        : () async {
+                            setState(() {
+                              _loading = true;
+                              _errorMessage = null;
+                            });
+                            try {
+                              await _authService.signInWithEmail(
+                                email: emailController.text,
+                                password: passwordController.text,
+                              );
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const HomeScreen(),
+                                ),
+                              );
+                            } on FirebaseAuthException catch (e) {
+                              setState(() {
+                                _errorMessage =
+                                    e.message ?? 'Authentication failed';
+                              });
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(_errorMessage!)),
+                              );
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Unknown error: $e')),
+                              );
+                            } finally {
+                              if (mounted)
+                                setState(() {
+                                  _loading = false;
+                                });
+                            }
+                          },
                     child: const Text(
                       "Let's Learn",
                       style: TextStyle(color: Colors.white, fontSize: 18),
@@ -151,7 +187,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 25),
 
-                // OR Divider
                 Row(
                   children: const [
                     Expanded(
@@ -175,11 +210,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 25),
 
-                // Google Sign-in Button
                 Center(
                   child: GestureDetector(
-                    onTap: () {
-                      debugPrint("Google Sign-In clicked");
+                    onTap: () async {
+                      await _authService.signInWithGoogle();
                     },
                     child: Container(
                       width: 250,
@@ -227,7 +261,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // Input decoration method
   InputDecoration _inputDecoration(String label) {
     return InputDecoration(
       labelText: label,

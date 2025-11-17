@@ -12,19 +12,18 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  // ----------------------------
-  // CONTROLLERS
-  // ----------------------------
+  // Controllers
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
-  // ----------------------------
-  // SERVICE + STATE
-  // ----------------------------
+  // Services + states
   final AuthService _authService = AuthService();
   bool _loading = false;
+
+  bool _obscurePassword = true; // 👁️ Password toggle
+  bool _obscureConfirmPassword = true; // 👁️ Confirm Password toggle
 
   @override
   void dispose() {
@@ -35,9 +34,7 @@ class _SignupScreenState extends State<SignupScreen> {
     super.dispose();
   }
 
-  // ----------------------------
-  // REGISTER FUNCTION
-  // ----------------------------
+  // ---------------- REGISTER FUNCTION ----------------
   Future<void> _registerUser() async {
     final name = nameController.text.trim();
     final email = emailController.text.trim();
@@ -61,7 +58,6 @@ class _SignupScreenState extends State<SignupScreen> {
         fullName: name,
       );
 
-      // Go to login screen
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const LoginScreen()),
@@ -75,9 +71,7 @@ class _SignupScreenState extends State<SignupScreen> {
     }
   }
 
-  // ----------------------------
-  // ERROR MESSAGE HANDLER
-  // ----------------------------
+  // ---------------- ERROR MESSAGE ----------------
   void _showError(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
@@ -100,7 +94,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 Text("Register", style: AppTheme.heading),
                 const SizedBox(height: 25),
 
-                // ---------------------- FULL NAME ----------------------
+                // Full Name
                 Text("Full Name", style: AppTheme.labelStyle),
                 const SizedBox(height: 4),
                 TextField(
@@ -109,7 +103,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
                 const SizedBox(height: 18),
 
-                // ---------------------- EMAIL ----------------------
+                // Email
                 Text("Email", style: AppTheme.labelStyle),
                 const SizedBox(height: 4),
                 TextField(
@@ -118,28 +112,56 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
                 const SizedBox(height: 18),
 
-                // ---------------------- PASSWORD ----------------------
+                // PASSWORD with eye
                 Text("Password", style: AppTheme.labelStyle),
                 const SizedBox(height: 4),
                 TextField(
                   controller: passwordController,
-                  obscureText: true,
-                  decoration: _inputDecoration(),
+                  obscureText: _obscurePassword,
+                  decoration: _inputDecoration(
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        color: Colors.grey,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 18),
 
-                // ---------------------- CONFIRM PASSWORD ----------------------
+                // CONFIRM PASSWORD with eye
                 Text("Confirm Password", style: AppTheme.labelStyle),
                 const SizedBox(height: 4),
                 TextField(
                   controller: confirmPasswordController,
-                  obscureText: true,
-                  decoration: _inputDecoration(),
+                  obscureText: _obscureConfirmPassword,
+                  decoration: _inputDecoration(
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureConfirmPassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        color: Colors.grey,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscureConfirmPassword = !_obscureConfirmPassword;
+                        });
+                      },
+                    ),
+                  ),
                 ),
 
                 const SizedBox(height: 18),
 
-                // ---------------------- LOGIN LINK ----------------------
+                // Login Link
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -170,7 +192,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
                 const SizedBox(height: 25),
 
-                // ---------------------- REGISTER BUTTON ----------------------
+                // REGISTER BUTTON
                 Center(
                   child: ElevatedButton(
                     style: AppTheme.mainButton,
@@ -189,10 +211,8 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  // ----------------------
-  // INPUT DECORATION UI
-  // ----------------------
-  InputDecoration _inputDecoration() {
+  // ---------------- INPUT DECORATION with suffixIcon ----------------
+  InputDecoration _inputDecoration({Widget? suffixIcon}) {
     return InputDecoration(
       filled: true,
       fillColor: Colors.white.withOpacity(0.9),
@@ -206,6 +226,7 @@ class _SignupScreenState extends State<SignupScreen> {
         borderRadius: BorderRadius.circular(10),
         borderSide: const BorderSide(color: Colors.brown, width: 1.5),
       ),
+      suffixIcon: suffixIcon, // 👈 IMPORTANT
     );
   }
 }

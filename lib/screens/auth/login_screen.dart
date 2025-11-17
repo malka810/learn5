@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:learn5/theme.dart';
-import 'home_screen.dart';
+import '../home/home_screen.dart';
 import 'signup_screen.dart';
 import 'forgot_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,8 +18,11 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController passwordController = TextEditingController();
 
   final AuthService _authService = AuthService();
+
   bool _loading = false;
   String? _errorMessage;
+
+  bool _obscurePassword = true; // 👈 Add eye toggle variable
 
   @override
   void dispose() {
@@ -42,6 +45,8 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 Center(child: Text("Learn5", style: AppTheme.titleStyle)),
                 const SizedBox(height: 40),
+
+                /// Profile Image Circle
                 Center(
                   child: Container(
                     width: 155,
@@ -56,12 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color.fromARGB(
-                            255,
-                            0,
-                            0,
-                            0,
-                          ).withOpacity(0.4),
+                          color: Colors.black.withOpacity(0.4),
                           blurRadius: 8,
                           offset: const Offset(4, 4),
                         ),
@@ -81,19 +81,38 @@ class _LoginScreenState extends State<LoginScreen> {
                 Text("Login", style: AppTheme.heading),
                 const SizedBox(height: 20),
 
+                /// EMAIL
                 TextField(
                   controller: emailController,
                   decoration: _inputDecoration("Email"),
                 ),
                 const SizedBox(height: 18),
 
+                /// PASSWORD WITH EYE ICON 👁
                 TextField(
                   controller: passwordController,
-                  obscureText: true,
-                  decoration: _inputDecoration("Password"),
+                  obscureText: _obscurePassword,
+                  decoration: _inputDecoration(
+                    "Password",
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        color: Colors.grey,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
+                  ),
                 ),
+
                 const SizedBox(height: 12),
 
+                /// LINKS
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -138,6 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 25),
 
+                /// LOGIN BUTTON
                 Center(
                   child: ElevatedButton(
                     style: AppTheme.mainButton,
@@ -148,11 +168,13 @@ class _LoginScreenState extends State<LoginScreen> {
                               _loading = true;
                               _errorMessage = null;
                             });
+
                             try {
                               await _authService.signInWithEmail(
                                 email: emailController.text,
                                 password: passwordController.text,
                               );
+
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
@@ -167,15 +189,12 @@ class _LoginScreenState extends State<LoginScreen> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text(_errorMessage!)),
                               );
-                            } catch (e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Unknown error: $e')),
-                              );
                             } finally {
-                              if (mounted)
+                              if (mounted) {
                                 setState(() {
                                   _loading = false;
                                 });
+                              }
                             }
                           },
                     child: const Text(
@@ -187,6 +206,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 25),
 
+                /// OR DIVIDER
                 Row(
                   children: const [
                     Expanded(
@@ -210,10 +230,25 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 25),
 
+                /// GOOGLE SIGN-IN BUTTON
                 Center(
                   child: GestureDetector(
                     onTap: () async {
-                      await _authService.signInWithGoogle();
+                      UserCredential result = await _authService
+                          .signInWithGoogle();
+
+                      if (result.user != null) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (_) => const HomeScreen()),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Google Sign-In failed"),
+                          ),
+                        );
+                      }
                     },
                     child: Container(
                       width: 250,
@@ -232,14 +267,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: Image.asset(
-                              'assets/images/google.png',
-                              height: 24,
-                              width: 24,
-                            ),
+                          Image.asset(
+                            'assets/images/google.png',
+                            height: 24,
+                            width: 24,
                           ),
+                          const SizedBox(width: 10),
                           const Text(
                             "Sign in with Google",
                             style: TextStyle(
@@ -261,13 +294,15 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  InputDecoration _inputDecoration(String label) {
+  /// UPDATED INPUT DECORATION (supports suffixIcon)
+  InputDecoration _inputDecoration(String label, {Widget? suffixIcon}) {
     return InputDecoration(
       labelText: label,
       filled: true,
       fillColor: Colors.white.withOpacity(0.9),
       contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 15),
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
+      suffixIcon: suffixIcon, // 👈 added
     );
   }
 }

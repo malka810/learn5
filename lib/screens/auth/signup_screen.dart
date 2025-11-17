@@ -12,13 +12,11 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  // Controllers
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
-  // Services + states
   final AuthService _authService = AuthService();
   bool _loading = false;
 
@@ -34,7 +32,6 @@ class _SignupScreenState extends State<SignupScreen> {
     super.dispose();
   }
 
-  // ---------------- REGISTER FUNCTION ----------------
   Future<void> _registerUser() async {
     final name = nameController.text.trim();
     final email = emailController.text.trim();
@@ -71,7 +68,6 @@ class _SignupScreenState extends State<SignupScreen> {
     }
   }
 
-  // ---------------- ERROR MESSAGE ----------------
   void _showError(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
@@ -94,7 +90,6 @@ class _SignupScreenState extends State<SignupScreen> {
                 Text("Register", style: AppTheme.heading),
                 const SizedBox(height: 25),
 
-                // Full Name
                 Text("Full Name", style: AppTheme.labelStyle),
                 const SizedBox(height: 4),
                 TextField(
@@ -103,7 +98,6 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
                 const SizedBox(height: 18),
 
-                // Email
                 Text("Email", style: AppTheme.labelStyle),
                 const SizedBox(height: 4),
                 TextField(
@@ -112,7 +106,6 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
                 const SizedBox(height: 18),
 
-                // PASSWORD with eye
                 Text("Password", style: AppTheme.labelStyle),
                 const SizedBox(height: 4),
                 TextField(
@@ -136,7 +129,6 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
                 const SizedBox(height: 18),
 
-                // CONFIRM PASSWORD with eye
                 Text("Confirm Password", style: AppTheme.labelStyle),
                 const SizedBox(height: 4),
                 TextField(
@@ -160,8 +152,6 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
 
                 const SizedBox(height: 18),
-
-                // Login Link
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -192,7 +182,6 @@ class _SignupScreenState extends State<SignupScreen> {
 
                 const SizedBox(height: 25),
 
-                // REGISTER BUTTON
                 Center(
                   child: ElevatedButton(
                     style: AppTheme.mainButton,
@@ -211,7 +200,6 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  // ---------------- INPUT DECORATION with suffixIcon ----------------
   InputDecoration _inputDecoration({Widget? suffixIcon}) {
     return InputDecoration(
       filled: true,
@@ -226,7 +214,7 @@ class _SignupScreenState extends State<SignupScreen> {
         borderRadius: BorderRadius.circular(10),
         borderSide: const BorderSide(color: Colors.brown, width: 1.5),
       ),
-      suffixIcon: suffixIcon, // 👈 IMPORTANT
+      suffixIcon: suffixIcon,
     );
   }
 }

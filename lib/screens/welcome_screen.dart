@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'login_screen.dart';
+import 'auth/login_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -104,16 +104,16 @@ class WelcomeScreen extends StatelessWidget {
                       );
                     },
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(
+                      backgroundColor: WidgetStateProperty.all(
                         const Color.fromARGB(255, 32, 34, 0),
                       ),
-                      padding: MaterialStateProperty.all(
+                      padding: WidgetStateProperty.all(
                         const EdgeInsets.symmetric(
                           horizontal: 40,
                           vertical: 16,
                         ),
                       ),
-                      shape: MaterialStateProperty.all(
+                      shape: WidgetStateProperty.all(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                           side: const BorderSide(
@@ -122,13 +122,13 @@ class WelcomeScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                      elevation: MaterialStateProperty.resolveWith<double>(
+                      elevation: WidgetStateProperty.resolveWith<double>(
                         (states) =>
-                            states.contains(MaterialState.hovered) ? 14.0 : 8.0,
+                            states.contains(WidgetState.hovered) ? 14.0 : 8.0,
                       ),
-                      shadowColor: MaterialStateProperty.all(Colors.black54),
-                      overlayColor: MaterialStateProperty.resolveWith<Color?>(
-                        (states) => states.contains(MaterialState.hovered)
+                      shadowColor: WidgetStateProperty.all(Colors.black54),
+                      overlayColor: WidgetStateProperty.resolveWith<Color?>(
+                        (states) => states.contains(WidgetState.hovered)
                             ? const Color.fromARGB(26, 215, 212, 8)
                             : null,
                       ),

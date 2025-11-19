@@ -22,7 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _loading = false;
   String? _errorMessage;
 
-  bool _obscurePassword = true; // 👈 Add eye toggle variable
+  bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -46,7 +46,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 Center(child: Text("Learn5", style: AppTheme.titleStyle)),
                 const SizedBox(height: 40),
 
-                /// Profile Image Circle
                 Center(
                   child: Container(
                     width: 155,
@@ -56,14 +55,24 @@ class _LoginScreenState extends State<LoginScreen> {
                       shape: BoxShape.circle,
                       color: Colors.transparent,
                       border: Border.all(
-                        color: const Color.fromARGB(255, 255, 255, 250),
+                        color: const Color.fromARGB(
+                          255,
+                          4,
+                          4,
+                          0,
+                        ).withOpacity(0.5),
                         width: 4.0,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.4),
+                          color: const Color.fromARGB(
+                            255,
+                            247,
+                            255,
+                            160,
+                          ).withOpacity(0.2),
                           blurRadius: 8,
-                          offset: const Offset(4, 4),
+                          offset: const Offset(2, 2),
                         ),
                       ],
                     ),
@@ -81,14 +90,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 Text("Login", style: AppTheme.heading),
                 const SizedBox(height: 20),
 
-                /// EMAIL
                 TextField(
                   controller: emailController,
                   decoration: _inputDecoration("Email"),
                 ),
                 const SizedBox(height: 18),
 
-                /// PASSWORD WITH EYE ICON 👁
                 TextField(
                   controller: passwordController,
                   obscureText: _obscurePassword,
@@ -112,7 +119,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 12),
 
-                /// LINKS
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -157,7 +163,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 25),
 
-                /// LOGIN BUTTON
                 Center(
                   child: ElevatedButton(
                     style: AppTheme.mainButton,
@@ -206,7 +211,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 25),
 
-                /// OR DIVIDER
                 Row(
                   children: const [
                     Expanded(
@@ -230,7 +234,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 25),
 
-                /// GOOGLE SIGN-IN BUTTON
                 Center(
                   child: GestureDetector(
                     onTap: () async {
@@ -251,11 +254,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       }
                     },
                     child: Container(
-                      width: 250,
-                      height: 45,
+                      width: 230,
+                      height: 40,
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(30),
+                        borderRadius: BorderRadius.circular(14),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.2),
@@ -294,7 +297,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  /// UPDATED INPUT DECORATION (supports suffixIcon)
   InputDecoration _inputDecoration(String label, {Widget? suffixIcon}) {
     return InputDecoration(
       labelText: label,
@@ -302,7 +304,7 @@ class _LoginScreenState extends State<LoginScreen> {
       fillColor: Colors.white.withOpacity(0.9),
       contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 15),
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
-      suffixIcon: suffixIcon, // 👈 added
+      suffixIcon: suffixIcon,
     );
   }
 }

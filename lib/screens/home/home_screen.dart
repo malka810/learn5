@@ -6,7 +6,7 @@ import 'package:learn5/services/daily_words_manager.dart';
 import 'package:learn5/screens/learning/words_screen.dart';
 import 'package:learn5/widgets/progress_card.dart';
 import 'package:learn5/data/words_data.dart';
-import 'package:learn5/screens/history_screen.dart'; // <-- ADDED
+import 'package:learn5/screens/history_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -133,9 +133,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
 
-        // -----------------------
-        // ADDED HISTORY BUTTON
-        // -----------------------
         actions: [
           IconButton(
             icon: const Icon(Icons.history),

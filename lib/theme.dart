@@ -13,7 +13,7 @@ class AppTheme {
 
   static final ButtonStyle mainButton = ElevatedButton.styleFrom(
     backgroundColor: primaryDark,
-    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+    padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 16),
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(14),
       side: const BorderSide(color: lightCream, width: 1.5),

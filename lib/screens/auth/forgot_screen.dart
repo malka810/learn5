@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:learn5/theme.dart';
+import '../../services/auth_service.dart';
 
 class ForgotScreen extends StatelessWidget {
   const ForgotScreen({super.key});
@@ -32,14 +33,33 @@ class ForgotScreen extends StatelessWidget {
               Center(
                 child: ElevatedButton(
                   style: AppTheme.mainButton,
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          "Password reset link sent to your email.",
+                  onPressed: () async {
+                    final email = emailController.text.trim();
+
+                    if (email.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Please enter your email."),
                         ),
-                      ),
-                    );
+                      );
+                      return;
+                    }
+
+                    try {
+                      await AuthService().sendPasswordResetEmail(email: email);
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            "Password reset link sent to your email.",
+                          ),
+                        ),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text("Error: $e")));
+                    }
                   },
                   child: const Text(
                     "Send Reset Link",

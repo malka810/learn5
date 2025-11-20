@@ -30,7 +30,7 @@ class AppTheme {
   );
 
   static const TextStyle heading = TextStyle(
-    fontSize: 26,
+    fontSize: 24,
     fontWeight: FontWeight.w600,
     color: textDark,
   );

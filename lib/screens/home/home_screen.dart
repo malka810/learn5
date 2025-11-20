@@ -160,9 +160,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+                      Icon(Icons.menu_book, color: Colors.white, size: 28),
+                      SizedBox(width: 8),
                       const SizedBox(height: 10),
                       const Text(
-                        "Daily 5 English Words 📚",
+                        "Daily 5 English Words",
                         style: TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.bold,
@@ -239,8 +241,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         child: Column(
                           children: [
+                            Icon(
+                              Icons.bar_chart,
+                              color: Colors.black87,
+                              size: 22,
+                            ),
+                            SizedBox(width: 6),
                             const Text(
-                              "Your Learning Progress 📊",
+                              "Your Learning Progress",
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,

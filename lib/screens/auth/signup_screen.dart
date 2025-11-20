@@ -20,8 +20,8 @@ class _SignupScreenState extends State<SignupScreen> {
   final AuthService _authService = AuthService();
   bool _loading = false;
 
-  bool _obscurePassword = true; // 👁️ Password toggle
-  bool _obscureConfirmPassword = true; // 👁️ Confirm Password toggle
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   @override
   void dispose() {

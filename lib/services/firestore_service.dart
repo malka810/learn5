@@ -6,6 +6,16 @@ class FirestoreService {
 
   DocumentReference userDoc(String uid) => _db.collection('users').doc(uid);
 
+  // get all words
+  Future<List<Word>> getWords() async {
+    final snapshot = await _db.collection('words').get();
+
+    return snapshot.docs.map((doc) {
+      return Word.fromFirestore(doc.id, doc.data());
+    }).toList();
+  }
+
+  //save daily words
   Future<void> saveDailyWords(
     String uid,
     String dateId,
@@ -18,36 +28,35 @@ class FirestoreService {
     });
   }
 
+  //load daily words
   Future<List<Word>> loadDailyWords(String uid, String dateId) async {
     final snap = await userDoc(uid).collection('dailyWords').doc(dateId).get();
     if (!snap.exists) return [];
     final data = snap.data()!;
     final list = (data['words'] as List<dynamic>? ?? []);
-    return list.map((e) => Word.fromMap(Map<String, dynamic>.from(e))).toList();
+    return list.map((e) {
+      final map = Map<String, dynamic>.from(e);
+      return Word.fromMap(Map<String, dynamic>.from(e));
+    }).toList();
   }
 
+  //mark word learned
   Future<void> markWordLearned(String uid, Word word) async {
-    final learnedRef = userDoc(uid).collection('learned').doc(word.word);
-    final historyRef = userDoc(uid).collection('history').doc();
+    final learnedRef = userDoc(uid).collection('learned').doc(word.id);
 
-    final batch = _db.batch();
-    batch.set(learnedRef, {
+    await learnedRef.set({
       'word': word.word,
       'meaning': word.meaning,
       'learnedAt': FieldValue.serverTimestamp(),
     });
-    batch.set(historyRef, {
-      'word': word.word,
-      'action': 'learned',
-      'ts': FieldValue.serverTimestamp(),
-    });
-    await batch.commit();
   }
 
-  Future<void> unmarkWordLearned(String uid, String wordText) async {
-    await userDoc(uid).collection('learned').doc(wordText).delete();
+  //unmark word learned
+  Future<void> unmarkWordLearned(String uid, String id) async {
+    await userDoc(uid).collection('learned').doc(id).delete();
   }
 
+  //get learned words
   Future<List<String>> getLearnedWords(String uid) async {
     final snap = await userDoc(uid).collection('learned').get();
     return snap.docs.map((d) => (d.data()['word'] as String)).toList();
@@ -110,17 +119,22 @@ class FirestoreService {
     }
   }
 
-  Future<void> updateWordExample(String uid, Word word, String example) async {
-    final wordRef = userDoc(uid).collection('dailyWords').doc('yourDocId');
+  Future<void> updateWordExample(
+    String uid,
+    String dateId,
+    Word word,
+    String newExample,
+  ) async {
+    final doc = userDoc(uid).collection('dailyWords').doc(dateId);
 
-    await wordRef.update({
+    await doc.update({
       'words': FieldValue.arrayRemove([word.toMap()]),
     });
 
-    final updatedWord = word.copyWith(example: example);
+    final updated = word.copyWith(example: newExample);
 
-    await wordRef.update({
-      'words': FieldValue.arrayUnion([updatedWord.toMap()]),
+    await doc.update({
+      'words': FieldValue.arrayUnion([updated.toMap()]),
     });
   }
 }

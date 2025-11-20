@@ -79,8 +79,10 @@ class _WordDetailScreenState extends State<WordDetailScreen> {
 
     setState(() => savingExample = true);
     try {
+      final dateId = DateTime.now().toIso8601String().substring(0, 10);
       await FirestoreService().updateWordExample(
         uid,
+        dateId,
         word,
         exampleController.text,
       );

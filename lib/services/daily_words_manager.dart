@@ -58,10 +58,11 @@ class DailyWordsManager {
           }
         }
       } catch (e) {
-        // ignore malformed api data
+        // ignore errors and use defaults
       }
 
       return Word(
+        id: wordText,
         word: wordText,
         meaning: meaning,
         example: example,

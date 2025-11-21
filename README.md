@@ -37,6 +37,11 @@ The app supports **Sinhala, Tamil, and English**, making daily vocabulary learni
 ### Home Page
 ![Home Page](https://github.com/malka810/learn5/blob/d5d67819e71920b68f18f22efc2659a9de929952/home%20page.png)
 
+### Progress
+![Progress](https://github.com/malka810/learn5/blob/ff2b22dd477bbe7dc1c992aed329b1cdd579f459/Screenshot%202025-11-21%20215445.png)
+
+
+
 
 
 

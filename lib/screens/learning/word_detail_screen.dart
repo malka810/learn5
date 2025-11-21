@@ -2,12 +2,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:learn5/theme.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../models/word.dart';
 import '../../services/firestore_service.dart';
 import '../../api/translate_api.dart';
 import '../../data/local_storage.dart';
+import '../../theme.dart';
 
 class WordDetailScreen extends StatefulWidget {
   final Word word;
@@ -25,7 +25,6 @@ class _WordDetailScreenState extends State<WordDetailScreen> {
   String translatedMeaning = '';
   TextEditingController exampleController = TextEditingController();
   bool savingExample = false;
-
   final FlutterTts _tts = FlutterTts();
 
   @override
@@ -54,15 +53,22 @@ class _WordDetailScreenState extends State<WordDetailScreen> {
       ).showSnackBar(const SnackBar(content: Text('Sign in to save progress')));
       return;
     }
+
     final localLearned = await LocalStorage.loadLearnedWords();
+
     if (word.learned) {
-      await FirestoreService().unmarkWordLearned(uid, word.word);
-      localLearned.remove(word.word);
+      await FirestoreService().unmarkWordLearned(uid, word.id);
+      await LocalStorage.removeLearnedWord(word.id);
     } else {
-      await FirestoreService().markWordLearned(uid, word);
-      localLearned.add(word.word);
+      await FirestoreService().markWordLearned(
+        uid,
+        word,
+        example: exampleController.text,
+      );
+      await LocalStorage.addLearnedWord(word.id);
+      await FirestoreService().addHistoryItem(uid, word.word, 'learned');
     }
-    await LocalStorage.saveLearnedWords(localLearned);
+
     setState(() => word = word.copyWith(learned: !word.learned));
   }
 
@@ -94,7 +100,7 @@ class _WordDetailScreenState extends State<WordDetailScreen> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Example saved!')));
-    } catch (_) {
+    } catch (e) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Failed to save example')));
@@ -129,7 +135,7 @@ class _WordDetailScreenState extends State<WordDetailScreen> {
         borderRadius: BorderRadius.circular(13),
         side: const BorderSide(color: Colors.white, width: 1),
       ),
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
       elevation: 5,
     );
   }
@@ -151,22 +157,14 @@ class _WordDetailScreenState extends State<WordDetailScreen> {
             fontSize: 20,
             fontWeight: FontWeight.w600,
             color: Color.fromARGB(255, 40, 42, 0),
-            letterSpacing: 1.5,
-            shadows: [
-              Shadow(
-                blurRadius: 10,
-                color: Color.fromARGB(137, 68, 71, 0),
-                offset: Offset(1, 1),
-              ),
-            ],
           ),
         ),
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                const Color.fromARGB(255, 227, 255, 113).withOpacity(0.4),
-                const Color.fromARGB(255, 255, 251, 189).withOpacity(0.4),
+                Color.fromARGB(255, 227, 255, 113),
+                Color.fromARGB(255, 255, 251, 189),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -174,10 +172,14 @@ class _WordDetailScreenState extends State<WordDetailScreen> {
           ),
         ),
       ),
-
       body: Container(
-        decoration: const BoxDecoration(gradient: AppTheme.mainGradient),
-
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color.fromARGB(255, 69, 93, 55), Color(0xFF021B02)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -189,7 +191,6 @@ class _WordDetailScreenState extends State<WordDetailScreen> {
                     icon: const Icon(Icons.volume_up, color: Colors.white),
                     onPressed: () => _speak(word.word),
                   ),
-
                   IconButton(
                     icon: Icon(
                       word.learned
@@ -199,9 +200,7 @@ class _WordDetailScreenState extends State<WordDetailScreen> {
                     ),
                     onPressed: _toggleLearned,
                   ),
-
                   const Spacer(),
-
                   DropdownButton<String>(
                     value: selectedLang,
                     dropdownColor: Colors.black87,
@@ -220,37 +219,22 @@ class _WordDetailScreenState extends State<WordDetailScreen> {
                   ),
                 ],
               ),
-
-              const SizedBox(height: 25),
-
+              const SizedBox(height: 20),
               const Text(
                 'Meaning',
-                style: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  color: Colors.white,
-                  fontSize: 18,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 18),
               ),
-
               const SizedBox(height: 6),
               Text(
                 translatedMeaning,
                 style: const TextStyle(color: Colors.white),
               ),
-
               const SizedBox(height: 16),
-
               const Text(
                 'Example',
-                style: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  color: Colors.white,
-                  fontSize: 18,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 18),
               ),
-
               const SizedBox(height: 6),
-
               TextField(
                 controller: exampleController,
                 decoration: const InputDecoration(
@@ -260,15 +244,18 @@ class _WordDetailScreenState extends State<WordDetailScreen> {
                 ),
                 minLines: 2,
                 maxLines: 5,
+                style: const TextStyle(color: Colors.white),
               ),
-
               const SizedBox(height: 10),
-
               ElevatedButton(
                 onPressed: savingExample ? null : _saveExample,
                 style: _buttonStyle(),
                 child: savingExample
-                    ? const CircularProgressIndicator(color: Colors.white)
+                    ? const SizedBox(
+                        height: 18,
+                        width: 18,
+                        child: CircularProgressIndicator(color: Colors.white),
+                      )
                     : const Text(
                         'Save Example',
                         style: TextStyle(
@@ -277,9 +264,7 @@ class _WordDetailScreenState extends State<WordDetailScreen> {
                         ),
                       ),
               ),
-
               const SizedBox(height: 15),
-
               Row(
                 children: [
                   Expanded(
@@ -293,9 +278,7 @@ class _WordDetailScreenState extends State<WordDetailScreen> {
                       style: _buttonStyle(),
                     ),
                   ),
-
                   const SizedBox(width: 10),
-
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: _shareContent,

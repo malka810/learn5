@@ -31,21 +31,19 @@ class _WordsScreenState extends State<WordsScreen> {
 
   Future<void> _load() async {
     setState(() => isLoading = true);
-    final words = await _dailyManager.getOrCreateTodayWords();
 
-    final localLearned = await LocalStorage.loadLearnedWords();
+    final words = await _dailyManager.getOrCreateTodayWords();
+    final localLearnedIds = await LocalStorage.loadLearnedWords();
 
     for (var w in words) {
-      if (localLearned.contains(w.word)) {
-        w.learned = true;
-      }
+      if (localLearnedIds.contains(w.id)) w.learned = true;
     }
 
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid != null) {
-      final learned = await _fs.getLearnedWords(uid);
+      final learnedFromCloud = await _fs.getLearnedWords(uid);
       for (var w in words) {
-        if (learned.contains(w.word)) w.learned = true;
+        if (learnedFromCloud.contains(w.id)) w.learned = true;
       }
     }
 
@@ -66,22 +64,25 @@ class _WordsScreenState extends State<WordsScreen> {
     if (w.learned) return;
 
     setState(() => w.learned = true);
-    //save locally
-    final list = await LocalStorage.loadLearnedWords();
-    if (!list.contains(w.word)) {
-      list.add(w.word);
-      await LocalStorage.saveLearnedWords(list);
-    }
-    //save to cloud
-    await _fs.markWordLearned(uid, w);
+    await LocalStorage.addLearnedWord(w.id);
+
+    await _fs.markWordLearned(uid, w, example: w.example);
+
+    await _fs.addHistoryItem(uid, w.word, 'learned');
 
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('Marked as learned ✅')));
+
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
+    final visibleWords = WordsData.todayWords
+        .where((w) => w.learned == false)
+        .toList();
+
     return Container(
       decoration: const BoxDecoration(gradient: AppTheme.mainGradient),
       child: Scaffold(
@@ -93,13 +94,6 @@ class _WordsScreenState extends State<WordsScreen> {
               color: AppTheme.textDark,
               fontSize: 20,
               fontWeight: FontWeight.w600,
-              shadows: [
-                Shadow(
-                  blurRadius: 10,
-                  color: Colors.black54,
-                  offset: Offset(2, 2),
-                ),
-              ],
             ),
           ),
           flexibleSpace: Container(
@@ -130,28 +124,71 @@ class _WordsScreenState extends State<WordsScreen> {
             : RefreshIndicator(
                 color: AppTheme.primaryDark,
                 onRefresh: _load,
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  itemCount: WordsData.todayWords.length,
-                  itemBuilder: (context, i) {
-                    final w = WordsData.todayWords[i];
-                    return WordCard(
-                      word: w,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                WordDetailScreen(word: w, lang: 'si'),
-                          ),
-                        ).then((_) => _load());
-                      },
-                      onMarkLearned: () => _markLearned(w),
-                    );
-                  },
-                ),
+                child: visibleWords.isEmpty
+                    ? _buildSuccessView()
+                    : ListView.builder(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        itemCount: visibleWords.length,
+                        itemBuilder: (context, i) {
+                          final w = visibleWords[i];
+                          return WordCard(
+                            word: w,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      WordDetailScreen(word: w, lang: 'si'),
+                                ),
+                              ).then((_) => _load());
+                            },
+                            onMarkLearned: () => _markLearned(w),
+                          );
+                        },
+                      ),
               ),
       ),
+    );
+  }
+
+  Widget _buildSuccessView() {
+    return ListView(
+      padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 20),
+      children: [
+        Container(
+          margin: const EdgeInsets.only(top: 40),
+          padding: const EdgeInsets.all(22),
+          decoration: BoxDecoration(
+            color: const Color.fromARGB(255, 40, 147, 45),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: const [BoxShadow(blurRadius: 8, color: Colors.black26)],
+          ),
+          child: Column(
+            children: const [
+              Icon(
+                Icons.celebration,
+                color: Color.fromARGB(255, 255, 46, 46),
+                size: 72,
+              ),
+              SizedBox(height: 12),
+              Text(
+                "Success!",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 6),
+              Text(
+                "You're Great — you've learned all today's words.",
+                style: TextStyle(color: Colors.white, fontSize: 18),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

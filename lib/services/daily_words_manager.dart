@@ -31,35 +31,26 @@ class DailyWordsManager {
 
       try {
         final meanings = item['meanings'] as List<dynamic>?;
-
         if (meanings != null && meanings.isNotEmpty) {
           final firstMeaning = meanings.first as Map<String, dynamic>?;
-
           if (firstMeaning != null) {
             final defs = firstMeaning['definitions'] as List<dynamic>?;
-
             if (defs != null && defs.isNotEmpty) {
               final def = defs.first as Map<String, dynamic>?;
-
               if (def != null) {
                 meaning = def['definition']?.toString() ?? '';
                 example = def['example']?.toString() ?? '';
-
                 final synList = def['synonyms'];
-                if (synList is List) {
+                if (synList is List)
                   syn = synList.map((e) => e.toString()).toList();
-                }
                 final antList = def['antonyms'];
-                if (antList is List) {
+                if (antList is List)
                   ant = antList.map((e) => e.toString()).toList();
-                }
               }
             }
           }
         }
-      } catch (e) {
-        // ignore errors and use defaults
-      }
+      } catch (_) {}
 
       return Word(
         id: wordText,
@@ -70,8 +61,8 @@ class DailyWordsManager {
         antonyms: ant,
       );
     }).toList();
-    await _fs.saveDailyWords(uid, id, words);
 
+    await _fs.saveDailyWords(uid, id, words);
     return words;
   }
 }

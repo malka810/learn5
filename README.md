@@ -24,17 +24,14 @@ The app supports **Sinhala, Tamil, and English**, making daily vocabulary learni
 
 ## 📸 Screenshots
 
-### Home Screen
-![Home Screen](screenshots/home_screen.png)
+### Welcome Screen
+![Home Screen](home page.png)
 
-### Daily Words Screen
-![Daily Words](screenshots/daily_words.png)
+### Home Page
+![Home Page](home page.png)
 
-### Word Details
-![Word Details](screenshots/word_details.png)
+### Sign-Up Page
+![Sign-Up Page](Sign up.png)
 
-### Progress Tracking
-![Progress](screenshots/progress.png)
-
-### History / Learned Words
-![History](screenshots/history.png)
+### Login Page
+![Login Page](login page.png)

@@ -13,12 +13,28 @@ The app supports **Sinhala, Tamil, and English**, making daily vocabulary learni
 - Track your learning progress  
 - Simple and user-friendly interface  
 
----
-
 ## 🛠️ Tech Stack
 
 - **Frontend:** Flutter & Dart  
 - **State Management:** Provider / setState  
+- **Backend / Cloud Services:** Firebase (Authentication, Firestore)  
 - **Local Storage:** SharedPreferences (save user progress locally)  
 - **Fonts:** Google Fonts  
+---
 
+## 📸 Screenshots
+
+### Home Screen
+![Home Screen](screenshots/home_screen.png)
+
+### Daily Words Screen
+![Daily Words](screenshots/daily_words.png)
+
+### Word Details
+![Word Details](screenshots/word_details.png)
+
+### Progress Tracking
+![Progress](screenshots/progress.png)
+
+### History / Learned Words
+![History](screenshots/history.png)

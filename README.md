@@ -30,7 +30,7 @@ The app supports **Sinhala, Tamil, and English**, making daily vocabulary learni
 ![Sign-Up Page](https://github.com/malka810/learn5/blob/b731b6af34bbf5a84b6ace1f867a309d8454e5c0/Sign%20up.png)
 
 ### Login Page
-![Login Page](login page.png)
+![Login Page](https://github.com/malka810/learn5/blob/72d373b1815711ebdd5aec52cd047bee38dc8c99/login%20page.png)
 
 ### Home Page
 ![Home Page](home page.png)

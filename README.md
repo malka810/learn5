@@ -20,18 +20,5 @@ The app supports **Sinhala, Tamil, and English**, making daily vocabulary learni
 - **Backend / Cloud Services:** Firebase (Authentication, Firestore)  
 - **Local Storage:** SharedPreferences (save user progress locally)  
 - **Fonts:** Google Fonts  
----
 
-## 📸 Screenshots
 
-### Welcome Screen
-![Home Screen](home page.png)
-
-### Home Page
-![Home Page](home page.png)
-
-### Sign-Up Page
-![Sign-Up Page](Sign up.png)
-
-### Login Page
-![Login Page](login page.png)

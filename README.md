@@ -5,7 +5,7 @@ The app supports **Sinhala, Tamil, and English**, making daily vocabulary learni
 
 ---
 
-## 🌟 Features
+## Features
 
 - Daily 5 English words for learning  
 - Sinhala and Tamil translations for better understanding  
@@ -13,13 +13,15 @@ The app supports **Sinhala, Tamil, and English**, making daily vocabulary learni
 - Track your learning progress  
 - Simple and user-friendly interface  
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Frontend:** Flutter & Dart  
 - **State Management:** Provider / setState  
 - **Backend / Cloud Services:** Firebase (Authentication, Firestore)  
 - **Local Storage:** SharedPreferences (save user progress locally)  
 - **Fonts:** Google Fonts
+- **APIs Used:** WordsApi: Fetches random English words and their dictionary definitions
+- TranslateAPI: Translates English words/sentences into Sinhala or Tamil, with caching via         TranslationCache
 
   ## Screenshots
 

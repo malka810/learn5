@@ -19,7 +19,6 @@ The app supports **Sinhala, Tamil, and English**, making daily vocabulary learni
 - **State Management:** Provider / setState  
 - **Backend / Cloud Services:** Firebase (Authentication, Firestore)  
 - **Local Storage:** SharedPreferences (save user progress locally)  
-- **Fonts:** Google Fonts
 - **APIs Used:** WordsApi: Fetches random English words and their dictionary definitions
 - TranslateAPI: Translates English words/sentences into Sinhala or Tamil, with caching via         TranslationCache
 
